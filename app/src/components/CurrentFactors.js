@@ -9,7 +9,7 @@ const CurrentFactors = () => {
             { State: "NIHSS: 0", value: 0.11 },
             { State: "IVT timing: <91 min", value: 0.10 },
             { State: "INR: 0.9", value: 0.06 },
-            { State: "Leucocyte: 12 G/L", value: -0.06 }, // units are in 10^9/L
+            { State: "Leucocytes: 12 G/L", value: -0.06 }, // units are in 10^9/L
             { State: "Temperature: 37.9°C", value: -0.03 },
             { State: "Sodium: 143 mmol/L", value: -0.02 }, // units are in mmol/L
         ];
