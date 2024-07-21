@@ -15,9 +15,8 @@ const useStyles = makeStyles((theme) => ({
     },
 }));
 
-export default function MetaInput({patientId, age, sex, setAge, setSex}) {
+export default function MetaInput({patientId, age, setPatientId}) {
   const classes = useStyles();
-
   return (
     <div className={classes.currentPatientInfo}>
        <SensorOccupiedIcon size="inherit"/>
@@ -27,12 +26,12 @@ export default function MetaInput({patientId, age, sex, setAge, setSex}) {
                       select
                       defaultValue={patientId}
                       label={"ID"}
-                        // onChange={(event) => {
-                        //                 setSex(event.target.value);
-                        //                 }
-                        // }
+                        onChange={(event) => {
+                                        setPatientId(event.target.value);
+                                        }
+                        }
                     >
-                  {['Patient 1', 'Patient 2'].map((option) => (
+                  {['Patient 1', 'Patient 2', 'Patient 3', 'Patient 4'].map((option) => (
                     <MenuItem key={option} value={option}>
                       {option}
                     </MenuItem>
@@ -41,10 +40,11 @@ export default function MetaInput({patientId, age, sex, setAge, setSex}) {
 
             {/*Age:*/}
             <FormControl sx={{ width: '3ch' }}>
-                <TextField style={{width: "3ch"}} id="standard-basic" label={"Age"} variant="standard" defaultValue={age}
-                onChange={(event) => {
-                          setAge(event.target.value);
-                        }}
+                <TextField style={{width: "3ch"}} id="standard-basic" label={"Age"} variant="standard"
+                           value={age} disabled
+                // onChange={(event) => {
+                //           setAge(event.target.value);
+                //         }}
                 />
             </FormControl>
 

@@ -6,10 +6,13 @@ import walking_man from "../static/walking_man.png";
 import CurrentFactors from "./CurrentFactors";
 import PredictionOverTime from "./PredictionOverTime";
 import MetaInput from "./MetaInput";
+import example_patient_data from "./example_patient_data";
+import {isMobile} from "../utils";
 
 const useStyles = makeStyles((theme) => ({
     arcChart: {
         width: '25vw',
+        minWidth: '15em',
     },
     arcContainer: {
         display: 'flex',
@@ -21,12 +24,20 @@ const useStyles = makeStyles((theme) => ({
     },
     image: {
         width: '4vw',
+        minWidth: '2em',
         height: 'auto',
         margin: '0 1vw',
         opacity: '0.5',
     },
     explanatoryGraphContainer: {
         display: 'flex',
+        flexDirection: 'row',
+        justifyContent: 'center',
+        margin: 'auto',
+    },
+    mobileExplanatoryGraphContainer: {
+        display: 'flex',
+        flexDirection: 'column',
         justifyContent: 'center',
         margin: 'auto',
     },
@@ -36,33 +47,63 @@ const useStyles = makeStyles((theme) => ({
 const MainPredictionArea = ({ }) => {
     const classes = useStyles();
 
+    if (isMobile()) {
+        // set flex direction to column in explanatoryGraphContainer
+        classes.explanatoryGraphContainer = classes.mobileExplanatoryGraphContainer;
+    }
+
     // Use effect to monitor changes in height, weight, age, sex, and update drugInfo
     useEffect(() => {
     }, []);
 
-    const [age, setAge] = useState(70);
-    const [sex, setSex] = useState('Male');
     const [patientId, setPatientId] = useState('Patient 1');
+    const [patientTimepoint, setPatientTimepoint] = useState(example_patient_data[patientId].timestep);
+    const [patientData, setPatientData] = useState(example_patient_data[patientId].data);
+    const [patientFunctionalPredictions, setPatientFunctionalPredictions] = useState(example_patient_data[patientId].functional_outcome_predictions);
+    const [patientMortalityPredictions, setPatientMortalityPredictions] = useState(example_patient_data[patientId].mortality_predictions);
+    const [patientShapValues, setPatientShapValues] = useState(example_patient_data[patientId].shap_values);
+
+    const loadPatientData = (patientId) => {
+        setPatientTimepoint(example_patient_data[patientId].timestep);
+        setPatientData(example_patient_data[patientId].data);
+        setPatientFunctionalPredictions(example_patient_data[patientId].functional_outcome_predictions);
+        setPatientMortalityPredictions(example_patient_data[patientId].mortality_predictions);
+        setPatientShapValues(example_patient_data[patientId].shap_values);
+    }
+
+    // on change of patientId, load the patient's data
+    useEffect(() => {
+        // Load patient data
+        loadPatientData(patientId);
+    }, [patientId]);
 
     return (
         <div>
             <div>
-                <MetaInput age={age} sex={sex} patientId={patientId}
-                           setAge={setAge} setSex={setSex}
+                <MetaInput age={patientData[patientTimepoint - 1].Age} patientId={patientId}
+                           setPatientId={setPatientId}
                            />
             </div>
             <div className={classes.arcContainer}>
                 <img src={walking_man} alt="Left"
                      className={classes.image}/>
                 <div className={classes.arcChart}>
-                    <CurrentPrediction/>
+                    <CurrentPrediction
+                        functional_prediction={patientFunctionalPredictions[patientTimepoint - 1][0]}
+                        mortality_prediction={patientMortalityPredictions[patientTimepoint - 1][0]}
+                    />
                 </div>
                 <img src={tombstone} alt="Left"
                      className={classes.image}/>
             </div>
             <div className={classes.explanatoryGraphContainer}>
-                <CurrentFactors/>
-                <PredictionOverTime/>
+                <CurrentFactors
+                    currentData={patientData[patientTimepoint - 1]}
+                    currentShapValues={patientShapValues[patientTimepoint - 1]}
+                />
+                <PredictionOverTime predictions={patientFunctionalPredictions} shapValues={patientShapValues}
+                                    patientData={patientData} patientTimepoint={patientTimepoint}
+                />
             </div>
         </div>
     )

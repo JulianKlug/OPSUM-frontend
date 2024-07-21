@@ -1,7 +1,7 @@
 import React, { useRef, useEffect } from "react";
 import * as d3 from "d3";
 
-const CurrentPrediction = () => {
+const CurrentPrediction = ({functional_prediction, mortality_prediction}) => {
     const svgRef = useRef(null);
 
     useEffect(() => {
@@ -12,8 +12,8 @@ const CurrentPrediction = () => {
         let data = [
             {
                 label: 'Data',
-                good_functional_outcome: 66,
-                mortality: 4
+                good_functional_outcome: Number.parseFloat(functional_prediction * 100).toFixed(0),
+                mortality: Number.parseFloat(mortality_prediction * 100).toFixed(0)
             }
         ];
 
@@ -32,7 +32,6 @@ const CurrentPrediction = () => {
             .cornerRadius(20)
             .startAngle(angle * -1)
             .endAngle(function(d) { return -angle + (d.good_functional_outcome / 100) * 2 * angle; });
-
 
         let rightArc = d3
             .arc()
@@ -115,6 +114,8 @@ const CurrentPrediction = () => {
                     .attr("class", "tooltip")
                     .style("opacity", 0)
                     .style("position", "absolute")
+            // let text be centered on the beginning of the tooltip
+                .style("text-align", "center")
 
             charts
                 .append('path')
@@ -128,8 +129,10 @@ const CurrentPrediction = () => {
                        .attr('opacity', '.85');
                     tooltip.transition().duration(200).style("opacity", .9);
                     tooltip.html(`Functional Outcome`)
-                        .style("left", (e.pageX - 50) + "px")
-                        .style("top", (e.pageY - 60) + "px");
+                        // .style("left", (e.pageX - 50) + "px")
+                        // .style("top", (e.pageY - 60) + "px");
+                        .style("left", (this.getBoundingClientRect().x - tooltip.node().getBoundingClientRect().width / 2) + "px")
+                        .style("top", (this.getBoundingClientRect().y + this.getBoundingClientRect().height  + window.scrollY + 10) + "px");
 
                 })
                 .on('mouseout', function (d, i) {
@@ -139,26 +142,52 @@ const CurrentPrediction = () => {
                     tooltip.transition().duration(500).style("opacity", 0);
 
                 })
+                .transition() // Start a transition
+                .duration(1000) // Duration of 1000ms (1 second)
+                .attrTween('d', function(d) {
+                    var i = d3.interpolate(leftArc.startAngle()(), leftArc.endAngle()(d));
+                    return function(t) {
+                        return leftArc.endAngle(i(t))(d);
+                    };
+                });
+
 
             charts
                 .append('path')
                 .attr('d', rightArc)
                 // dark red
                 .attr('fill', '#D7263D')
-                .on('mouseover', function() {
+                .on('mouseover', function(e) {
                     d3.select(this).style('cursor', 'pointer');
                     d3.select(this).transition()
                        .duration('50')
                        .attr('opacity', '.85');
+                    tooltip.transition().duration(200).style("opacity", .9);
+                    tooltip.html(`Mortality`)
+                        // .style("left", (e.pageX - 50) + "px")
+                        // .style("top", (e.pageY - 60) + "px");
+                        .style('text-align', 'right')
+                        .style("left", (this.getBoundingClientRect().x + this.getBoundingClientRect().width - tooltip.node().getBoundingClientRect().width / 2) + "px")
+                        .style("top", (this.getBoundingClientRect().y + this.getBoundingClientRect().height  + window.scrollY + 10) + "px");
 
                 })
                 .on('mouseout', function (d, i) {
                   d3.select(this).transition()
                        .duration('50')
                        .attr('opacity', '1');
+                  tooltip.transition().duration(500).style("opacity", 0);
                 })
+                .transition() // Start a transition
+                .duration(1000) // Duration of 1000ms (1 second)
+                .attrTween('d', function(d) {
+                    var i = d3.interpolate(rightArc.endAngle()(), rightArc.startAngle()(d));
+                    return function(t) {
+                        return rightArc.startAngle(i(t))(d);
+                    };
+                });
+
         }
-    }, []);
+    }, [functional_prediction, mortality_prediction]);
 
     return (
         <div ref={svgRef}></div>

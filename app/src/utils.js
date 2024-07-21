@@ -4,3 +4,48 @@ export const isMobile = function() {
     return check;
   };
 
+
+export function argsort(arr) {
+    // Create an array of indices [0, 1, 2, ..., n-1]
+    let indices = arr.map((_, i) => i);
+
+    // Sort the indices array based on the corresponding values in the original array
+    indices.sort((a, b) => arr[a] - arr[b]);
+
+    return indices;
+}
+
+export const objectMap = (obj, fn) =>
+  Object.fromEntries(
+    Object.entries(obj).map(
+      ([k, v], i) => [k, fn(v, k, i)]
+    )
+  )
+
+export function filterConsecutiveNumbers(lst) {
+    let a = lst.map(Number);
+
+    if (a.length < 2) {
+        return a;
+    }
+
+    let consecutiveMask = [false];
+    for (let i = 1; i < a.length; i++) {
+        consecutiveMask.push(Math.abs(a[i] - a[i - 1]) === 1);
+    }
+
+    let result = a.filter((_, index) => !consecutiveMask[index]);
+
+    if (a.length === 2) {
+        return result;
+    }
+
+    let nextToConsecutiveMask = [false];
+    for (let i = 1; i < result.length; i++) {
+        nextToConsecutiveMask.push(Math.abs(result[i] - result[i - 1]) === 2);
+    }
+
+    result = result.filter((_, index) => !nextToConsecutiveMask[index]);
+
+    return result;
+}

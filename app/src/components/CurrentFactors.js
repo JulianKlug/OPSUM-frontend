@@ -1,23 +1,50 @@
 import * as d3 from "d3";
 import React, { useRef, useEffect } from "react";
+import units from "./units";
+import {isMobile} from "../utils";
 
-const CurrentFactors = () => {
+const CurrentFactors = ({currentData, currentShapValues}) => {
     const svgRef = useRef(null);
 
+    let svgHeight = '20vw';
+    let svgWidth = '50vw';
+    if (isMobile()) {
+        svgHeight = '36vw';
+        svgWidth = '90vw';
+    }
+
     useEffect(() => {
-        const data = [
-            { State: "NIHSS: 0", value: 0.11 },
-            { State: "IVT timing: <91 min", value: 0.10 },
-            { State: "INR: 0.9", value: 0.06 },
-            { State: "Leucocytes: 12 G/L", value: -0.06 }, // units are in 10^9/L
-            { State: "Temperature: 37.9°C", value: -0.03 },
-            { State: "Sodium: 143 mmol/L", value: -0.02 }, // units are in mmol/L
-        ];
+        // drop ["Unnamed: 0"] from currentShapValues (time step index)
+        delete currentShapValues["Unnamed: 0"];
+
+        // get the index of 3 biggest and 3 smallest values of the shap values
+        const shap_values = Object.keys(currentShapValues).map((key) => [key, currentShapValues[key]]);
+        const shap_values_sorted = shap_values.slice().sort((a, b) => a[1] - b[1]);
+        const top_3_pos_features = shap_values_sorted.slice(-3).reverse();
+        const top_3_neg_features = shap_values_sorted.slice(0, 3);
+
+        // drop timestep from currentData
+        delete currentData["time_step"];
+        // get the top 3 and bottom 3 data
+        const data = [];
+        // add the top 3 data and bottom 3 data to the data array
+        for (let i = 0; i < 3; i++) {
+            data.push({State: `${top_3_pos_features[i][0]}: ${
+                Math.round(currentData[top_3_pos_features[i][0]])
+            } ${units[top_3_pos_features[i][0]] ? units[top_3_pos_features[i][0]] : ""}` ,
+                value: currentShapValues[top_3_pos_features[i][0]]});
+            data.push({State: `${top_3_neg_features[i][0]}: ${
+                Math.round(currentData[top_3_neg_features[i][0]])
+                } ${units[top_3_neg_features[i][0]] ? units[top_3_neg_features[i][0]] : ""}`,
+                value: currentShapValues[top_3_neg_features[i][0]]});
+        }
 
         let width = 300;
         const metric = "absolute";
         const text_font_size = '1.4em';
         const number_font_size = '0.7em';
+        const title_font_size = isMobile() ? '0.8em' :'1em';
+        const transition_duration = 500;
 
         // Specify the chart’s dimensions.
         const barHeight = 50;
@@ -45,21 +72,45 @@ const CurrentFactors = () => {
         const svg = d3.create("svg")
             .attr("preserveAspectRatio", "xMinYMin meet")
             .attr("viewBox", `${-width} 0 ${width} ${height}`)
-            .attr("width", '50vw')
-            .attr("height", '20vw')
+            .attr("height", svgHeight)
+            .attr("width", svgWidth);
 
-        // Add a rect for each state.
-        svg.append("g")
-            .selectAll("rect")
-            .data(data)
-            .join("rect")
-            .attr("fill", (d) => d3.schemeRdBu[3][d.value > 0 ? 2 : 0])
-            // set opacity
-            .attr("opacity", 0.7)
-            .attr("x", (d) => x(Math.min(d.value, 0)))
-            .attr("y", (d) => y(d.State))
+        // Bind the data to the rectangles (bars)
+        const bars = svg.selectAll("rect")
+            .data(data, d => d.State); // Use the State as a key for data binding
+
+        const titleText = d3.select("body").append("div")
+            .attr("class", "current-factors-title")
+            .style("opacity", 0)
+            .style("position", "absolute")
+            .style("pointer-events", "none")
+            .style("font-size", title_font_size)
+            .style("text-align", "center")
+
+        // Enter selection: Initialize new bars
+        bars.enter().append("rect")
+            .attr("fill", d => d3.schemeRdBu[3][d.value > 0 ? 2 : 0])
+            .attr("x", x(0))
+            .attr("y", d => y(d.State))
+            .attr("height", y.bandwidth())
+            .attr("opacity", 0.7) // Initial opacity for the entering bars
+            // Transition for new bars
+            .transition().duration(transition_duration)
             .attr("width", d => Math.abs(x(d.value) - x(0)))
+            .attr("x", d => x(Math.min(d.value, 0)));
+
+        // Update selection: Update existing bars
+        bars.transition().duration(transition_duration)
+            .attr("y", d => y(d.State))
+            .attr("width", d => Math.abs(x(d.value) - x(0)))
+            .attr("x", d => x(Math.min(d.value, 0)))
             .attr("height", y.bandwidth());
+
+        // Exit selection: Remove bars that no longer have corresponding data
+        bars.exit()
+            .transition().duration(transition_duration)
+            .attr("width", 0) // Transition exiting bars to width of 0
+            .remove();
 
         // Add a text label for each state.
         svg.append("g")
@@ -93,11 +144,30 @@ const CurrentFactors = () => {
             .style('font-size', text_font_size)
             .style('fill', '#000');
 
+        // Add the title on hover over background
+        svg.append("rect")
+            .attr("x", 0)
+            .attr("y", 0)
+            .attr("width", width)
+            .attr("height", height)
+            .attr("opacity", 0)
+            .on("mouseover", function() {
+                console.log(this.getBoundingClientRect());
+                titleText.transition().duration(200).style("opacity", 1);
+                titleText.html(`Current most influential factors`)
+                    .style("left", (this.getBoundingClientRect().x + this.getBoundingClientRect().width/2 - titleText.node().getBoundingClientRect().width / 2) + "px")
+                    .style("top", (this.getBoundingClientRect().y + this.getBoundingClientRect().height + window.scrollY + 5) + "px");
+            })
+            .on("mouseout", function() {
+                titleText.transition().duration(200).style("opacity", 0);
+            })
+
+
         if (svgRef.current) {
             svgRef.current.innerHTML = "";
             svgRef.current.appendChild(svg.node());
         }
-    }, []);
+    }, [currentData, currentShapValues]);
 
     return <div ref={svgRef}></div>;
 };
