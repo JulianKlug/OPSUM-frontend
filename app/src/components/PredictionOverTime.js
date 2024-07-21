@@ -31,7 +31,11 @@ const PredictionOverTime = ({predictions, patientData, shapValues, patientTimepo
     const height = 200;
     const text_font_size = '0.7em';
     const title_font_size = isMobile() ? '0.8em' :'1em';
-    const titleTextYMargin = isMobile() ? 25 : 50;
+    // vh to px
+    const convertVwToPx = (vw) => { return vw * window.innerWidth / 100; }
+    // const titleTextYMargin = isMobile() ? 25 : 50;
+    const titleTextYMargin = convertVwToPx(svgHeight.slice(0, -2)/5);
+    console.log(titleTextYMargin);
 
     // convert predictions to data obj
     let data = Object.keys(predictions).map((key) => {

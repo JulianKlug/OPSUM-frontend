@@ -25,6 +25,7 @@
   "scripts": {
     "start": "react-scripts start",
     "build": "react-scripts build",
+    "serve": "./node_modules/serve/build/main.js build/ -l 2088",
     "test": "react-scripts test",
     "eject": "react-scripts eject"
   },

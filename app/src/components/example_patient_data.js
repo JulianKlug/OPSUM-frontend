@@ -20,7 +20,7 @@ import * as p4_shap_values from '../static/data/working_shap_values_p4.json';
 
 const example_patient_data = {
     'Patient 1': {
-        'timestep': 62,
+        'timestep': 55,
         'data': p2_data,
         'functional_outcome_predictions': p2_functional_predictions,
         'mortality_predictions': p2_mortality_predictions,
