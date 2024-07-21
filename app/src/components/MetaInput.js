@@ -39,9 +39,9 @@ export default function MetaInput({patientId, age, setPatientId}) {
                 </TextField>
 
             {/*Age:*/}
-            <FormControl sx={{ width: '3ch' }}>
-                <TextField style={{width: "3ch"}} id="standard-basic" label={"Age"} variant="standard"
-                           value={age} disabled
+            <FormControl sx={{ width: '4ch' }}>
+                <TextField style={{width: "4ch"}} id="standard-basic" label={"Age"} variant="standard"
+                           value={Number.parseFloat(age).toFixed(1)}
                 // onChange={(event) => {
                 //           setAge(event.target.value);
                 //         }}

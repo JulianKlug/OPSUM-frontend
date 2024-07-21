@@ -128,7 +128,7 @@ const CurrentPrediction = ({functional_prediction, mortality_prediction}) => {
                        .duration('50')
                        .attr('opacity', '.85');
                     tooltip.transition().duration(200).style("opacity", .9);
-                    tooltip.html(`Functional Outcome`)
+                    tooltip.html(`Good Functional Outcome`)
                         // .style("left", (e.pageX - 50) + "px")
                         // .style("top", (e.pageY - 60) + "px");
                         .style("left", (this.getBoundingClientRect().x - tooltip.node().getBoundingClientRect().width / 2) + "px")

@@ -45,14 +45,32 @@ export default function InfoBackdrop({open, handleClose}) {
 
             <div className={classes.description}>
                 <Typography variant="body1">
-                OPSUM: real-time dynamic prediction of outcome after acute ischemic stroke
-                <br/><br/>
-                This project is the frontend for the <Link variant="inherit" color="inherit" href='https://github.com/JulianKlug/OPSUM'>OPSUM</Link> model. <br/>
+                    <Link variant="inherit" color="inherit" href='https://github.com/JulianKlug/OPSUM'>OPSUM</Link> -
+                    Real-time dynamic prediction of outcome after acute ischemic stroke
+                    <br/><br/><br/>
 
-                <br/><br/>
-                If you wish to contribute to this project, please do not hesitate to contact me.
+                    Stroke is the most frequent cause of long-term disability in industrialized countries. To determine
+                    the best treatment and allocate the necessary resources, an early and accurate prediction of outcome
+                    is essential. Although modern stroke units gather a continuous stream of data, existing prognostic
+                    scores are rarely used in clinical practice as they are static and fail to adapt to the evolving
+                    condition of the patient.
+                    <br/><br/>
+
+                    We developed a novel machine learning approach to provide real-time predictions of mortality and
+                    good functional outcome. More specifically, we used a transformer model that was designed to
+                    integrate continuously recorded sequential data. During the first 72 hours after admission, our
+                    model is able to provide accurate hourly prediction of outcome at three months based on updated
+                    clinical, physiological, and biological data.
+                    <br/><br/>
+
+                    This page is an example user interface for the <Link variant="inherit" color="inherit"
+                                                                   href='https://github.com/JulianKlug/OPSUM'>OPSUM</Link> model. All data displayed here is fictional and no real patient data was used.
+                    <br/>
+
+                    <br/><br/>
+                    If you wish to contribute to this project, please do not hesitate to contact me.
                 </Typography>
-                </div>
+            </div>
                 <div className={classes.signature}>
                     <Link variant="inherit" color="inherit" href='https://www.julianklug.com'> Julian Klug </Link>
             </div>

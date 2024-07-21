@@ -376,7 +376,7 @@ const PredictionOverTime = ({predictions, patientData, shapValues, patientTimepo
             .attr("x", 205)
             .attr("y", 60)
             .attr("text-anchor", "left")
-            .text("Prediction")
+            .text("Predicted probability")
             .style('font-size', text_font_size)
             .attr("opacity", 0.8);
 
