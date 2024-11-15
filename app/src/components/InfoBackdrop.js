@@ -45,8 +45,8 @@ export default function InfoBackdrop({open, handleClose}) {
 
             <div className={classes.description}>
                 <Typography variant="body1">
-                    <Link variant="inherit" color="inherit" href='https://github.com/JulianKlug/OPSUM'>OPSUM</Link> -
-                    Real-time dynamic prediction of outcome after acute ischemic stroke
+                    <Link variant="inherit" color="inherit" href='https://doi.org/10.1038/s43856-024-00666-w'>OPSUM</Link> -
+                    Machine learning for early dynamic prediction of functional outcome after stroke
                     <br/><br/><br/>
 
                     Stroke is the most frequent cause of long-term disability in industrialized countries. To determine
@@ -64,14 +64,25 @@ export default function InfoBackdrop({open, handleClose}) {
                     <br/><br/>
 
                     This page is an example user interface for the <Link variant="inherit" color="inherit"
-                                                                   href='https://github.com/JulianKlug/OPSUM'>OPSUM</Link> model. All data displayed here is fictional and no real patient data was used.
+                                                                         href='https://github.com/JulianKlug/OPSUM'>OPSUM</Link> model.
+                    All data displayed here is fictional and no real patient data was used.
                     <br/>
 
                     <br/><br/>
                     If you wish to contribute to this project, please do not hesitate to contact me.
+
+                    <br/><br/>
+                    <b>Reference:</b>
+                {/*    italic*/}
+                    <br/>
+                    <i><Link variant="inherit" color="inherit" href='https://doi.org/10.1038/s43856-024-00666-w'>
+                        Klug, J., Leclerc, G., Dirren, E. et al. Machine learning for early dynamic prediction of functional outcome after stroke. Commun Med 4, 232 (2024).
+                    </Link>
+                    </i>
+
                 </Typography>
             </div>
-                <div className={classes.signature}>
+            <div className={classes.signature}>
                     <Link variant="inherit" color="inherit" href='https://www.julianklug.com'> Julian Klug </Link>
             </div>
         </Backdrop>
